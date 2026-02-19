@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Διαγωνισμός Αρχαίων ΣΚΕΝΔΡΟΣ Γ.</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--main:#4f46e5;--accent:#f59e0b;--bg:#eef2ff;--card:#ffffff}
+body{margin:0;font-family:'Manrope',system-ui;background:linear-gradient(180deg,#eef2ff,#e0e7ff);color:#111}
+header{background:linear-gradient(135deg,#4338ca,#6366f1);color:white;padding:22px;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.15)}
+h1{margin:0;font-size:28px}
+.container{max-width:900px;margin:auto;padding:20px}
+.card{background:var(--card);border-radius:18px;padding:22px;margin:18px 0;box-shadow:0 10px 25px rgba(0,0,0,.12)}
+button{background:var(--main);color:white;border:none;padding:12px 20px;border-radius:12px;font-size:16px;cursor:pointer;transition:.2s}
+button:hover{transform:scale(1.05)}
+.choice{border:2px solid #ddd;border-radius:14px;padding:12px;margin:10px 0;cursor:pointer;transition:.2s}
+.choice:hover{background:#eef2ff}
+.choice.correct{background:#bbf7d0;border-color:#16a34a}
+.choice.wrong{background:#fecaca;border-color:#dc2626}
+.timer{font-weight:bold;color:#dc2626}
+.score{font-size:20px;font-weight:bold}
+.hidden{display:none}
+.ranking li{margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>🏛 Διαγωνισμός Αρχαίων ΣΚΕΝΔΡΟΣ Γ.</h1>
+<p>Α΄ Γυμνασίου – Α΄ Κλίση</p>
+</header>
+<div class="container">
+<div class="card" id="start">
+<label>Σχολείο:</label>
+<input id="school" placeholder="π.χ. 2ο Γυμνάσιο" />
+<br/><br/>
+<button onclick="startGame()">Έναρξη</button>
+</div>
+<div id="game" class="hidden">
+<div class="card">
+<span class="timer">Χρόνος: <span id="time">0</span>s</span>
+<span style="float:right" class="score">Πόντοι: <span id="score">0</span></span>
+</div>
+<div class="card" id="questionBox"></div>
+<button id="nextBtn" class="hidden" onclick="nextQuestion()">Επόμενη</button>
+</div>
+<div id="end" class="card hidden"></div>
+</div>
+<script>
+let score=0,time=0,timer,step=0,startTime;
+const qBox=document.getElementById('questionBox');
+
+const questions=[
+{q:'Η λέξη «μαχῶν» είναι:',a:['Ονομαστική ενικού','Γενική πληθυντικού','Αιτιατική ενικού'],correct:1},
+{q:'Η λέξη «μάχαις» είναι:',a:['Δοτική πληθυντικού','Γενική ενικού','Ονομαστική πληθυντικού'],correct:0},
+{q:'Η λέξη «μάχας» είναι:',a:['Αιτιατική πληθυντικού','Ονομαστική ενικού','Δοτική ενικού'],correct:0},
+{q:'Η λέξη «μάχη» είναι:',a:['Ονομαστική ενικού','Γενική πληθυντικού','Δοτική πληθυντικού'],correct:0},
+{q:'Η λέξη «χώρᾳ» είναι:',a:['Δοτική ενικού','Αιτιατική ενικού','Ονομαστική πληθυντικού'],correct:0},
+{q:'Η λέξη «χώραις» είναι:',a:['Δοτική πληθυντικού','Γενική ενικού','Ονομαστική πληθυντικού'],correct:0},
+{q:'Η λέξη «χώρας» είναι:',a:['Γενική ενικού','Αιτιατική ενικού','Ονομαστική πληθυντικού'],correct:0},
+{q:'Η λέξη «χώραι» είναι:',a:['Ονομαστική πληθυντικού','Γενική πληθυντικού','Αιτιατική ενικού'],correct:0},
+{q:'Η λέξη «τιμῇ» είναι:',a:['Δοτική ενικού','Αιτιατική πληθυντικού','Ονομαστική ενικού'],correct:0},
+{q:'Η λέξη «τιμῶν» είναι:',a:['Γενική πληθυντικού','Ονομαστική πληθυντικού','Αιτιατική ενικού'],correct:0},
+{q:'Η λέξη «γνώμην» είναι:',a:['Αιτιατική ενικού','Γενική ενικού','Δοτική ενικού'],correct:0},
+{q:'Η λέξη «γνώμαι» είναι:',a:['Ονομαστική πληθυντικού','Αιτιατική ενικού','Γενική πληθυντικού'],correct:0},
+{q:'Γενική ενικού της χώρα:',a:['χώρας','χώραν','χώρᾳ'],correct:0},
+{q:'Δοτική ενικού της μάχη:',a:['μάχης','μάχῃ','μάχην'],correct:1},
+{q:'Αιτιατική ενικού της γνώμη:',a:['γνώμην','γνώμης','γνώμῃ'],correct:0},
+{q:'Ονομαστική πληθυντικού της θάλασσα:',a:['θάλασσαι','θαλάσσας','θαλασσῶν'],correct:0},
+{q:'Γενική πληθυντικού της χώρα:',a:['χωρῶν','χώρας','χώραι'],correct:0},
+{q:'Δοτική πληθυντικού της μάχη:',a:['μάχας','μάχαις','μαχῶν'],correct:1},
+{q:'Αιτιατική πληθυντικού της γνώμη:',a:['γνώμαι','γνώμας','γνωμῶν'],correct:1}
+];
+
+function startGame(){document.getElementById('start').classList.add('hidden');document.getElementById('game').classList.remove('hidden');startTime=Date.now();timer=setInterval(()=>{time=Math.floor((Date.now()-startTime)/1000);document.getElementById('time').textContent=time},1000);showQuestion();}
+
+function showQuestion(){qBox.innerHTML='';document.getElementById('nextBtn').classList.add('hidden');let q=questions[step];let h=`<h3>${q.q}</h3>`;q.a.forEach((opt,i)=>{h+=`<div class='choice' onclick='checkMC(this,${i},${q.correct})'>${opt}</div>`});qBox.innerHTML=h}
+
+function checkMC(el,i,c){[...document.querySelectorAll('.choice')].forEach(x=>x.onclick=null);if(i===c){el.classList.add('correct');score+=10}else el.classList.add('wrong');document.getElementById('score').textContent=score;document.getElementById('nextBtn').classList.remove('hidden')}
+
+function nextQuestion(){step++;if(step<questions.length)showQuestion();else endGame()}
+
+function endGame(){clearInterval(timer);document.getElementById('game').classList.add('hidden');let end=document.getElementById('end');end.classList.remove('hidden');end.innerHTML=`<h2>🏆 Αποτελέσματα</h2><p><b>${document.getElementById('school').value}</b> βγήκατε <b>2οι</b>!</p><p>Πόντοι: ${score} | Χρόνος: ${time} δευτερόλεπτα</p><h3>Κατάταξη Σχολείων Λάρισας</h3><ol class='ranking'><li>1ο Γυμνάσιο Λάρισας</li><li>${document.getElementById('school').value}</li><li>3ο Γυμνάσιο Λάρισας</li><li>4ο Γυμνάσιο Λάρισας</li><li>5ο Γυμνάσιο Λάρισας</li><li>6ο Γυμνάσιο Λάρισας</li><li>7ο Γυμνάσιο Λάρισας</li><li>Μουσικό Σχολείο Λάρισας</li></ol>`}
+</script>
+</body>
+</html>
