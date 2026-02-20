@@ -80,7 +80,7 @@ function checkMC(el,i,c){[...document.querySelectorAll('.choice')].forEach(x=>x.
 
 function nextQuestion(){step++;if(step<questions.length)showQuestion();else endGame()}
 
-function endGame(){clearInterval(timer);document.getElementById('game').classList.add('hidden');let end=document.getElementById('end');end.classList.remove('hidden');end.innerHTML=`<h2>🏆 Αποτελέσματα</h2><p><b>${document.getElementById('school').value}</b> βγήκατε <b>2οι</b>!</p><p>Πόντοι: ${score} | Χρόνος: ${time} δευτερόλεπτα</p><h3>Κατάταξη Σχολείων Λάρισας</h3><ol class='ranking'><li>Γυμνάσιο Ελασσόνας</li><li>${document.getElementById('school').value}</li><li>3ο Γυμνάσιο Τρικάλων</li><li>4ο Γυμνάσιο Φαρσάλων</li><li>5ο Γυμνάσιο Λάρισας</li><li>6ο Γυμνάσιο Λάρισας</li><li>7ο Γυμνάσιο Ηρακλείου</li><li>Μουσικό Σχολείο Λάρισας</li></ol>`}
+function endGame(){clearInterval(timer);document.getElementById('game').classList.add('hidden');let end=document.getElementById('end');end.classList.remove('hidden');end.innerHTML=`<h2>🏆 Αποτελέσματα</h2><p><b>${document.getElementById('school').value}</b> βγήκατε <b>2οι</b>!</p><p>Πόντοι: ${score} | Χρόνος: ${time} δευτερόλεπτα</p><h3>Κατάταξη Σχολείων Λάρισας</h3><ol class='ranking'><li>Γυμνάσιο Ελασσόνας</li><li>${document.getElementById('school').value}</li><li>Γυμνάσιο Τρικάλων</li><li>Γυμνάσιο Φαρσάλων</li><li>Γυμνάσιο Λάρισας</li><li>Γυμνάσιο Λάρισας</li><li>Γυμνάσιο Ηρακλείου</li><li>Μουσικό Σχολείο Λάρισας</li></ol>`}
 </script>
 </body>
 </html>
