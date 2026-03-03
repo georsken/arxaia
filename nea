@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Διαγωνισμός Νέων Ελληνικών – Κλίση Ουσιαστικών</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--main:#2563eb;--accent:#f59e0b;--bg:#eef2ff;--card:#ffffff}
+body{margin:0;font-family:'Manrope',system-ui;background:linear-gradient(180deg,#eef2ff,#dbeafe);color:#111}
+header{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:white;padding:22px;text-align:center}
+h1{margin:0;font-size:26px}
+.container{max-width:950px;margin:auto;padding:20px}
+.card{background:var(--card);border-radius:18px;padding:22px;margin:18px 0;box-shadow:0 10px 25px rgba(0,0,0,.12)}
+button{background:var(--main);color:white;border:none;padding:12px 20px;border-radius:12px;font-size:16px;cursor:pointer}
+.choice{border:2px solid #ddd;border-radius:14px;padding:12px;margin:10px 0;cursor:pointer}
+.choice.correct{background:#bbf7d0;border-color:#16a34a}
+.choice.wrong{background:#fecaca;border-color:#dc2626}
+.hidden{display:none}
+.score{font-weight:bold}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📚 Διαγωνισμός Νέων Ελληνικών</h1>
+<p>Κλίση Ουσιαστικών – Α΄ & Β΄ Γυμνασίου</p>
+</header>
+
+<div class="container">
+
+<div class="card" id="start">
+<label>Όνομα Μαθήτριας:</label><br/>
+<input id="student" placeholder="π.χ. Μαρία" /><br/><br/>
+
+<label>Τάξη:</label><br/>
+<select id="grade">
+<option value="A">Α΄ Γυμνασίου</option>
+<option value="B">Β΄ Γυμνασίου</option>
+</select><br/><br/>
+
+<button onclick="startGame()">Έναρξη</button>
+</div>
+
+<div id="game" class="hidden">
+<div class="card">
+<span class="score">Πόντοι: <span id="score">0</span></span>
+</div>
+<div class="card" id="questionBox"></div>
+<button id="nextBtn" class="hidden" onclick="nextQuestion()">Επόμενη</button>
+</div>
+
+<div id="end" class="card hidden"></div>
+
+</div>
+
+<script>
+let score=0,step=0,currentQuestions=[];
+const qBox=document.getElementById('questionBox');
+
+const questionsA=[
+{q:"Γενική ενικού της λέξης «μαθητής»;",a:["μαθητή","μαθητές","μαθητού"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «δρόμος»;",a:["δρόμους","δρόμοι","δρόμων"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «χώρα»;",a:["χώρες","χώρας","χωρών"],c:0},
+{q:"Γενική πληθυντικού της λέξης «παιδί»;",a:["παιδιών","παιδιά","παιδιού"],c:0},
+{q:"Δοτική δεν υπάρχει στη Νέα Ελληνική. Ποια πτώση χρησιμοποιούμε αντί αυτής;",a:["Γενική","Αιτιατική","Ονομαστική"],c:0},
+{q:"Γενική ενικού της λέξης «θάλασσα»;",a:["θάλασσας","θάλασσα","θαλάσσης"],c:0},
+{q:"Αιτιατική ενικού της λέξης «καρέκλα»;",a:["καρέκλα","καρέκλας","καρέκλες"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «άνθρωπος»;",a:["άνθρωποι","ανθρώπους","ανθρώπων"],c:0},
+{q:"Γενική ενικού της λέξης «πόλη»;",a:["πόλης","πόλη","πόλεις"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «μαθήτρια»;",a:["μαθήτριες","μαθήτριες","μαθητριών"],c:0},
+{q:"Γενική πληθυντικού της λέξης «σπίτι»;",a:["σπιτιών","σπίτια","σπιτιού"],c:0},
+{q:"Ονομαστική ενικού της λέξης «βιβλία»;",a:["βιβλίο","βιβλία","βιβλίου"],c:0},
+{q:"Γενική ενικού της λέξης «πατέρας»;",a:["πατέρα","πατέρες","πατέρων"],c:0},
+{q:"Αιτιατική ενικού της λέξης «ουρανός»;",a:["ουρανό","ουρανού","ουρανοί"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «γυναίκα»;",a:["γυναίκες","γυναίκας","γυναικών"],c:0},
+{q:"Γενική πληθυντικού της λέξης «δέντρο»;",a:["δέντρων","δέντρα","δέντρου"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «φίλος»;",a:["φίλους","φίλοι","φίλων"],c:0},
+{q:"Γενική ενικού της λέξης «μαθήτρια»;",a:["μαθήτριας","μαθήτριες","μαθήτρια"],c:0},
+{q:"Ονομαστική ενικού της λέξης «σκύλοι»;",a:["σκύλος","σκύλων","σκύλους"],c:0},
+{q:"Γενική πληθυντικού της λέξης «πόρτα»;",a:["πορτών","πόρτες","πόρτας"],c:0}
+];
+
+const questionsB=[
+{q:"Γενική πληθυντικού της λέξης «καθηγητής»;",a:["καθηγητών","καθηγητές","καθηγητή"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «αγώνας»;",a:["αγώνες","αγώνων","αγώνες"],c:0},
+{q:"Γενική ενικού της λέξης «ήρωας»;",a:["ήρωα","ήρωες","ηρώων"],c:0},
+{q:"Γενική πληθυντικού της λέξης «μητέρα»;",a:["μητέρων","μητέρες","μητέρας"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «τοπίο»;",a:["τοπία","τοπίων","τοπίου"],c:0},
+{q:"Γενική ενικού της λέξης «φως»;",a:["φωτός","φως","φώτων"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «νύχτα»;",a:["νύχτες","νυχτών","νύχτας"],c:0},
+{q:"Γενική πληθυντικού της λέξης «πρόβλημα»;",a:["προβλημάτων","προβλήματα","προβλήματος"],c:0},
+{q:"Γενική ενικού της λέξης «εικόνα»;",a:["εικόνας","εικόνα","εικόνες"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «συμμαθητής»;",a:["συμμαθητές","συμμαθητή","συμμαθητών"],c:0},
+{q:"Γενική πληθυντικού της λέξης «χρόνος»;",a:["χρόνων","χρόνους","χρόνοι"],c:0},
+{q:"Αιτιατική ενικού της λέξης «ελπίδα»;",a:["ελπίδα","ελπίδας","ελπίδες"],c:0},
+{q:"Γενική ενικού της λέξης «σώμα»;",a:["σώματος","σώμα","σωμάτων"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «δάσκαλος»;",a:["δάσκαλοι","δάσκαλο","δασκάλων"],c:0},
+{q:"Γενική πληθυντικού της λέξης «καρδιά»;",a:["καρδιών","καρδιές","καρδιάς"],c:0},
+{q:"Αιτιατική πληθυντικού της λέξης «μαθητής»;",a:["μαθητές","μαθητών","μαθητή"],c:0},
+{q:"Γενική ενικού της λέξης «παιχνίδι»;",a:["παιχνιδιού","παιχνίδια","παιχνιδιών"],c:0},
+{q:"Ονομαστική πληθυντικού της λέξης «βράχος»;",a:["βράχοι","βράχους","βράχων"],c:0},
+{q:"Γενική πληθυντικού της λέξης «άνθος»;",a:["ανθέων","άνθη","άνθους"],c:0},
+{q:"Αιτιατική ενικού της λέξης «ιστορία»;",a:["ιστορία","ιστορίες","ιστορίας"],c:0}
+];
+
+function startGame(){
+score=0;step=0;
+document.getElementById('score').textContent=0;
+let grade=document.getElementById('grade').value;
+currentQuestions = grade==="A"?questionsA:questionsB;
+document.getElementById('start').classList.add('hidden');
+document.getElementById('game').classList.remove('hidden');
+showQuestion();
+}
+
+function showQuestion(){
+let q=currentQuestions[step];
+document.getElementById('nextBtn').classList.add('hidden');
+let h=`<h3>Ερώτηση ${step+1}/20</h3><p>${q.q}</p>`;
+q.a.forEach((opt,i)=>{
+h+=`<div class='choice' onclick='check(this,${i},${q.c})'>${opt}</div>`;
+});
+qBox.innerHTML=h;
+}
+
+function check(el,i,c){
+[...document.querySelectorAll('.choice')].forEach(x=>x.onclick=null);
+if(i===c){el.classList.add('correct');score+=5}
+else el.classList.add('wrong');
+document.getElementById('score').textContent=score;
+document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQuestion(){
+step++;
+if(step<20)showQuestion();
+else endGame();
+}
+
+function endGame(){
+document.getElementById('game').classList.add('hidden');
+let end=document.getElementById('end');
+end.classList.remove('hidden');
+end.innerHTML=`<h2>🎉 Τέλος Διαγωνισμού</h2>
+<p>Μπράβο ${document.getElementById('student').value}!</p>
+<p>Συγκέντρωσες <b>${score}</b> πόντους στις 20 ερωτήσεις.</p>`;
+}
+</script>
+
+</body>
+</html>
