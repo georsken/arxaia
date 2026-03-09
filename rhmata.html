@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Διαγωνισμός Αρχαίων – Ρήμα Λύω</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{--main:#4f46e5;--accent:#f59e0b;--bg:#eef2ff;--card:#ffffff}
+
+body{
+margin:0;
+font-family:'Manrope',system-ui;
+background:linear-gradient(180deg,#eef2ff,#e0e7ff);
+color:#111
+}
+
+header{
+background:linear-gradient(135deg,#4338ca,#6366f1);
+color:white;
+padding:22px;
+text-align:center;
+box-shadow:0 6px 18px rgba(0,0,0,.15)
+}
+
+h1{margin:0;font-size:28px}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px
+}
+
+.card{
+background:var(--card);
+border-radius:18px;
+padding:22px;
+margin:18px 0;
+box-shadow:0 10px 25px rgba(0,0,0,.12)
+}
+
+button{
+background:var(--main);
+color:white;
+border:none;
+padding:12px 20px;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
+transition:.2s
+}
+
+button:hover{transform:scale(1.05)}
+
+.choice{
+border:2px solid #ddd;
+border-radius:14px;
+padding:12px;
+margin:10px 0;
+cursor:pointer;
+transition:.2s
+}
+
+.choice:hover{background:#eef2ff}
+
+.choice.correct{
+background:#bbf7d0;
+border-color:#16a34a
+}
+
+.choice.wrong{
+background:#fecaca;
+border-color:#dc2626
+}
+
+.timer{font-weight:bold;color:#dc2626}
+
+.score{font-size:20px;font-weight:bold}
+
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🏛 Διαγωνισμός Αρχαίων</h1>
+<p>Ρήμα ΛΥΩ – Χρόνοι Οριστικής</p>
+</header>
+
+<div class="container">
+
+<div class="card" id="start">
+
+<label>Όνομα:</label>
+<input id="school" placeholder="π.χ. Εύα" />
+
+<br><br>
+
+<button onclick="startGame()">Έναρξη</button>
+
+</div>
+
+<div id="game" class="hidden">
+
+<div class="card">
+
+<span class="timer">Χρόνος: <span id="time">0</span>s</span>
+
+<span style="float:right" class="score">
+Πόντοι: <span id="score">0</span>
+</span>
+
+</div>
+
+<div class="card" id="questionBox"></div>
+
+<button id="nextBtn" class="hidden" onclick="nextQuestion()">
+Επόμενη
+</button>
+
+</div>
+
+<div id="end" class="card hidden"></div>
+
+</div>
+
+<script>
+
+let score=0
+let time=0
+let timer
+let step=0
+let startTime
+
+const qBox=document.getElementById('questionBox')
+
+const questions=[
+
+{q:'Η λέξη «λύω» είναι:',a:['Μέλλοντας','Ενεστώτας','Αόριστος'],correct:1},
+
+{q:'Η λέξη «ἔλυον» είναι:',a:['Παρατατικός','Ενεστώτας','Αόριστος'],correct:0},
+
+{q:'Η λέξη «λύσω» είναι:',a:['Ενεστώτας','Αόριστος','Μέλλοντας'],correct:2},
+
+{q:'Η λέξη «ἔλυσα» είναι:',a:['Αόριστος','Παρακείμενος','Παρατατικός'],correct:0},
+
+{q:'Η λέξη «λέλυκα» είναι:',a:['Υπερσυντέλικος','Παρακείμενος','Αόριστος'],correct:1},
+
+{q:'Η λέξη «ἐλελύκειν» είναι:',a:['Παρακείμενος','Υπερσυντέλικος','Παρατατικός'],correct:1},
+
+{q:'Η λέξη «λύεις» είναι:',a:['Ενεστώτας','Μέλλοντας','Αόριστος'],correct:0},
+
+{q:'Η λέξη «ἔλυες» είναι:',a:['Παρατατικός','Αόριστος','Μέλλοντας'],correct:0},
+
+{q:'Η λέξη «λύσει» είναι:',a:['Μέλλοντας','Παρακείμενος','Ενεστώτας'],correct:0},
+
+{q:'Η λέξη «ἔλυσε» είναι:',a:['Παρακείμενος','Αόριστος','Ενεστώτας'],correct:1},
+
+{q:'Η λέξη «λελύκαμεν» είναι:',a:['Αόριστος','Παρακείμενος','Μέλλοντας'],correct:1},
+
+{q:'Η λέξη «ἐλελύκεσαν» είναι:',a:['Παρατατικός','Υπερσυντέλικος','Παρακείμενος'],correct:1},
+
+{q:'Β΄ ενικό Ενεστώτα του λύω:',a:['λύεις','λύει','λύω'],correct:0},
+
+{q:'Α΄ ενικό Μέλλοντα του λύω:',a:['λύω','λύσω','ἔλυσα'],correct:1},
+
+{q:'Γ΄ ενικό Αορίστου του λύω:',a:['ἔλυσε','λύει','λέλυκε'],correct:0},
+
+{q:'Α΄ πληθυντικό Παρακειμένου του λύω:',a:['λέλυκα','λελύκαμεν','λέλυκας'],correct:1},
+
+{q:'Β΄ πληθυντικό Ενεστώτα του λύω:',a:['λύετε','λύομεν','λύουσι'],correct:0},
+
+{q:'Γ΄ πληθυντικό Ενεστώτα του λύω:',a:['λύουσι','λύετε','λύομεν'],correct:0},
+
+{q:'Α΄ ενικό Παρατατικού του λύω:',a:['ἔλυσα','ἔλυον','λύω'],correct:1},
+
+{q:'Α΄ ενικό Παρακειμένου του λύω:',a:['λέλυκα','ἔλυσα','λύσω'],correct:0}
+
+]
+
+function startGame(){
+
+document.getElementById('start').classList.add('hidden')
+document.getElementById('game').classList.remove('hidden')
+
+startTime=Date.now()
+
+timer=setInterval(()=>{
+
+time=Math.floor((Date.now()-startTime)/1000)
+
+document.getElementById('time').textContent=time
+
+},1000)
+
+showQuestion()
+
+}
+
+function showQuestion(){
+
+qBox.innerHTML=''
+
+document.getElementById('nextBtn').classList.add('hidden')
+
+let q=questions[step]
+
+let h=`<h3>${q.q}</h3>`
+
+q.a.forEach((opt,i)=>{
+
+h+=`<div class='choice' onclick='checkMC(this,${i},${q.correct})'>${opt}</div>`
+
+})
+
+qBox.innerHTML=h
+
+}
+
+function checkMC(el,i,c){
+
+[...document.querySelectorAll('.choice')].forEach(x=>x.onclick=null)
+
+if(i===c){
+
+el.classList.add('correct')
+
+score+=10
+
+}
+
+else{
+
+el.classList.add('wrong')
+
+}
+
+document.getElementById('score').textContent=score
+
+document.getElementById('nextBtn').classList.remove('hidden')
+
+}
+
+function nextQuestion(){
+
+step++
+
+if(step<questions.length)showQuestion()
+
+else endGame()
+
+}
+
+function endGame(){
+
+clearInterval(timer)
+
+document.getElementById('game').classList.add('hidden')
+
+let end=document.getElementById('end')
+
+end.classList.remove('hidden')
+
+end.innerHTML=`
+
+<h2>🏆 Αποτελέσματα</h2>
+
+<p><b>${document.getElementById('school').value}</b> ολοκληρώσατε τον διαγωνισμό!</p>
+
+<p>Πόντοι: ${score} | Χρόνος: ${time} δευτερόλεπτα</p>
+
+`
+
+}
+
+</script>
+
+</body>
+</html>
