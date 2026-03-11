@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Διαγωνισμός Αρχαίων Ελληνικών</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+font-family:'Manrope',system-ui;
+background:linear-gradient(180deg,#eef2ff,#dbeafe);
+}
+
+header{
+background:linear-gradient(135deg,#1d4ed8,#3b82f6);
+color:white;
+text-align:center;
+padding:22px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:white;
+border-radius:16px;
+padding:20px;
+margin:16px 0;
+box-shadow:0 10px 20px rgba(0,0,0,.1);
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+}
+
+.choice{
+border:2px solid #ddd;
+border-radius:12px;
+padding:12px;
+margin:10px 0;
+cursor:pointer;
+}
+
+.choice.correct{
+background:#bbf7d0;
+border-color:#16a34a;
+}
+
+.choice.wrong{
+background:#fecaca;
+border-color:#dc2626;
+}
+
+.hidden{display:none}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>📜 Πανελλήνιος Διαγωνισμός Αρχαίων Ελληνικών</h1>
+<p>Α΄ & Β΄ Κλίση + Ρήμα λύω</p>
+</header>
+
+<div class="container">
+
+<div class="card" id="start">
+<label>Σχολείο:</label><br>
+<input id="school" placeholder="π.χ. Γυμνάσιο"><br><br>
+<button onclick="startGame()">Έναρξη</button>
+</div>
+
+<div id="game" class="hidden">
+
+<div class="card">
+Πόντοι: <b id="score">0</b>
+</div>
+
+<div class="card" id="questionBox"></div>
+
+<button id="nextBtn" class="hidden" onclick="nextQuestion()">Επόμενη</button>
+
+</div>
+
+<div id="end" class="card hidden"></div>
+
+</div>
+
+<script>
+
+let score=0
+let step=0
+const qBox=document.getElementById("questionBox")
+
+const questions=[
+
+// Α ΚΛΙΣΗ
+
+{q:"Γενική ενικού της λέξης «τιμή»;",a:["τιμῆς","τιμή","τιμαί"],c:0},
+{q:"Ονομαστική πληθυντικού «χώρα»;",a:["χῶραι","χώρας","χωρῶν"],c:0},
+{q:"Αιτιατική ενικού «γνώμη»;",a:["γνώμη","γνώμης","γνώμην"],c:2},
+{q:"Γενική πληθυντικού «τιμή»;",a:["τιμαί","τιμῶν","τιμή"],c:1},
+{q:"Δοτική ενικού «χώρα»;",a:["χώρᾳ","χώρας","χώραν"],c:0},
+
+// Β ΚΛΙΣΗ
+
+{q:"Γενική ενικού «λόγος»;",a:["λόγον","λόγου","λόγος"],c:1},
+{q:"Αιτιατική ενικού «λόγος»;",a:["λόγον","λόγος","λόγου"],c:0},
+{q:"Ονομαστική πληθυντικού «λόγος»;",a:["λόγοι","λόγους","λόγων"],c:0},
+{q:"Γενική πληθυντικού «λόγος»;",a:["λόγους","λόγων","λόγοι"],c:1},
+{q:"Δοτική πληθυντικού «λόγος»;",a:["λόγοις","λόγους","λόγων"],c:0},
+
+// ΟΥΔΕΤΕΡΑ Β ΚΛΙΣΗΣ
+
+{q:"Ονομαστική ενικού «δῶρον»;",a:["δῶρον","δώρου","δῶρα"],c:0},
+{q:"Γενική ενικού «δῶρον»;",a:["δώρου","δῶρα","δώρων"],c:0},
+{q:"Ονομαστική πληθυντικού «δῶρον»;",a:["δώρων","δῶρα","δώρου"],c:1},
+{q:"Γενική πληθυντικού «δῶρον»;",a:["δώρων","δῶρα","δώρου"],c:0},
+{q:"Δοτική πληθυντικού «δῶρον»;",a:["δώροις","δώρων","δῶρα"],c:0},
+
+// ΡΗΜΑ ΛΥΩ
+
+{q:"Ενεστώτας α΄ ενικό;",a:["λύω","λύεις","λύει"],c:0},
+{q:"Ενεστώτας β΄ ενικό;",a:["λύεις","λύω","λύει"],c:0},
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύουσι","λύετε","λύομεν"],c:0},
+
+{q:"Παρατατικός α΄ ενικό;",a:["ἔλυον","λύω","ἔλυσα"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυον","λύει"],c:0},
+
+{q:"Μέλλοντας α΄ ενικό;",a:["λύσω","ἔλυσα","λέλυκα"],c:0},
+{q:"Μέλλοντας γ΄ ενικό;",a:["λύσει","λύσεις","λύσω"],c:0},
+
+{q:"Αόριστος α΄ ενικό;",a:["ἔλυσα","λύω","λέλυκα"],c:0},
+{q:"Αόριστος γ΄ πληθυντικό;",a:["ἔλυσαν","ἐλύσατε","ἐλύσαμεν"],c:0},
+
+{q:"Παρακείμενος α΄ ενικό;",a:["λέλυκα","ἔλυσα","λύσω"],c:0},
+{q:"Παρακείμενος β΄ ενικό;",a:["λέλυκας","λέλυκε","λέλυκα"],c:0},
+
+// ΜΙΚΤΑ
+
+{q:"Γενική ενικού «τιμή»;",a:["τιμῆς","τιμή","τιμαί"],c:0},
+{q:"Αιτιατική πληθυντικού «λόγος»;",a:["λόγους","λόγοι","λόγων"],c:0},
+{q:"Ονομαστική πληθυντικού «δῶρον»;",a:["δῶρα","δώρων","δώρου"],c:0},
+{q:"Ενεστώτας α΄ πληθυντικό «λύω»;",a:["λύομεν","λύετε","λύουσι"],c:0}
+
+]
+
+function startGame(){
+score=0
+step=0
+document.getElementById("score").textContent=0
+document.getElementById("start").classList.add("hidden")
+document.getElementById("game").classList.remove("hidden")
+showQuestion()
+}
+
+function showQuestion(){
+
+let q=questions[step]
+
+document.getElementById("nextBtn").classList.add("hidden")
+
+let h=`<h3>Ερώτηση ${step+1}/30</h3><p>${q.q}</p>`
+
+q.a.forEach((opt,i)=>{
+h+=`<div class='choice' onclick='check(this,${i},${q.c})'>${opt}</div>`
+})
+
+qBox.innerHTML=h
+}
+
+function check(el,i,c){
+
+document.querySelectorAll(".choice").forEach(x=>x.onclick=null)
+
+if(i===c){
+el.classList.add("correct")
+score+=5
+}else{
+el.classList.add("wrong")
+}
+
+document.getElementById("score").textContent=score
+document.getElementById("nextBtn").classList.remove("hidden")
+}
+
+function nextQuestion(){
+
+step++
+
+if(step<30){
+showQuestion()
+}else{
+endGame()
+}
+
+}
+
+function endGame(){
+
+document.getElementById("game").classList.add("hidden")
+
+let school=document.getElementById("school").value
+
+let end=document.getElementById("end")
+
+end.classList.remove("hidden")
+
+end.innerHTML=`
+
+<h2>🏆 Τελική Κατάταξη</h2>
+
+<ol>
+<li><b>${school}</b></li>
+<li>Γυμνάσιο Τρικάλων</li>
+<li>1ο Θεσσαλονίκης</li>
+<li>Μουσικό Γυμνάσιο</li>
+<li>Γυμνάσιο Φαρσάλων</li>
+<li>2ο Γυμνάσιο Βόλου</li>
+</ol>
+
+<p>Συγχαρητήρια! Το σχολείο σας κατέκτησε την <b>1η θέση</b>!</p>
+
+`
+
+}
+
+</script>
+
+</body>
+</html>
