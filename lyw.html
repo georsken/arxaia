@@ -3,82 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Διαγωνισμός Αρχαίων Ελληνικών – Ρήμα λύω</title>
-
+<title>Διαγωνισμός Αρχαίων Ελληνικών – λύω</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-
-:root{
---main:#2563eb;
---card:#ffffff;
-}
-
-body{
-margin:0;
-font-family:'Manrope',system-ui;
-background:linear-gradient(180deg,#eef2ff,#dbeafe);
-}
-
-header{
-background:linear-gradient(135deg,#1d4ed8,#3b82f6);
-color:white;
-text-align:center;
-padding:22px;
-}
-
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-
-.card{
-background:white;
-border-radius:16px;
-padding:20px;
-margin:16px 0;
-box-shadow:0 10px 20px rgba(0,0,0,.1);
-}
-
-button{
-background:#2563eb;
-color:white;
-border:none;
-padding:12px 18px;
-border-radius:10px;
-cursor:pointer;
-font-size:16px;
-}
-
-.choice{
-border:2px solid #ddd;
-border-radius:12px;
-padding:12px;
-margin:10px 0;
-cursor:pointer;
-}
-
-.choice.correct{
-background:#bbf7d0;
-border-color:#16a34a;
-}
-
-.choice.wrong{
-background:#fecaca;
-border-color:#dc2626;
-}
-
+:root{--main:#2563eb;}
+body{margin:0;font-family:'Manrope',system-ui;background:linear-gradient(180deg,#eef2ff,#dbeafe);}
+header{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:white;text-align:center;padding:22px;}
+.container{max-width:900px;margin:auto;padding:20px;}
+.card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 10px 20px rgba(0,0,0,.1);}
+button{background:#2563eb;color:white;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:16px;}
+.choice{border:2px solid #ddd;border-radius:12px;padding:12px;margin:10px 0;cursor:pointer;}
+.choice.correct{background:#bbf7d0;border-color:#16a34a;}
+.choice.wrong{background:#fecaca;border-color:#dc2626;}
 .hidden{display:none}
-
 </style>
 </head>
-
 <body>
 
 <header>
 <h1>📜 Διαγωνισμός Αρχαίων Ελληνικών</h1>
-<p>Ρήμα «λύω» – Χρόνοι</p>
+<p>Ρήμα «λύω» – Οριστική</p>
 </header>
 
 <div class="container">
@@ -106,118 +50,114 @@ border-color:#dc2626;
 </div>
 
 <script>
+// --- Μεταβλητές ---
+let score = 0;
+let step = 0;
+const qBox = document.getElementById("questionBox");
 
-let score=0
-let step=0
-const qBox=document.getElementById("questionBox")
-
-const questions=[
-
-{q:"Παρακείμενος του «λύω» (α΄ ενικό);",a:["λέλυκα","ἔλυσα","λύσω"],c:0},
-{q:"Αόριστος του «λύω» (α΄ ενικό);",a:["λύω","ἔλυσα","λέλυκα"],c:1},
-{q:"Μέλλοντας του «λύω» (α΄ ενικό);",a:["λύσω","ἔλυσα","λέλυκα"],c:0},
-{q:"Παρατατικός του «λύω» (α΄ ενικό);",a:["ἔλυον","λύω","λύσω"],c:0},
-{q:"Παρακείμενος β΄ ενικό;",a:["λέλυκας","λέλυκε","λέλυκα"],c:0},
-{q:"Παρακείμενος γ΄ ενικό;",a:["λέλυκας","λέλυκε","λέλυκα"],c:1},
-{q:"Παρακείμενος α΄ πληθυντικό;",a:["λελύκαμεν","λέλυκας","λελύκατε"],c:0},
-{q:"Παρακείμενος β΄ πληθυντικό;",a:["λελύκασι","λελύκατε","λελύκαμεν"],c:1},
-{q:"Παρακείμενος γ΄ πληθυντικό;",a:["λελύκασι","λελύκαμεν","λελύκατε"],c:0},
-
-{q:"Ενεστώτας β΄ ενικό;",a:["λύεις","λύω","λύει"],c:0},
-{q:"Ενεστώτας γ΄ ενικό;",a:["λύω","λύει","λύεις"],c:1},
+// --- Ερωτήσεις ---
+const questions = [
+{q:"Ενεστώτας α΄ ενικό;",a:["λύεις","λύω","λύει"],c:1},
+{q:"Ενεστώτας β΄ ενικό;",a:["λύει","λύεις","λύω"],c:1},
+{q:"Ενεστώτας γ΄ ενικό;",a:["λύει","λύεις","λύω"],c:0},
 {q:"Ενεστώτας α΄ πληθυντικό;",a:["λύομεν","λύετε","λύουσι"],c:0},
-{q:"Ενεστώτας β΄ πληθυντικό;",a:["λύουσι","λύετε","λύομεν"],c:1},
-{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύουσι","λύετε","λύομεν"],c:0},
+{q:"Ενεστώτας β΄ πληθυντικό;",a:["λύομεν","λύουσι","λύετε"],c:2},
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύετε","λύουσι","λύομεν"],c:1},
 
-{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυον","λύει"],c:0},
+{q:"Παρατατικός α΄ ενικό;",a:["ἔλυον","λύω","λύσω"],c:0},
+{q:"Παρατατικός β΄ ενικό;",a:["ἔλυες","ἔλυον","ἔλυε"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυες","ἔλυον"],c:0},
 {q:"Παρατατικός α΄ πληθυντικό;",a:["ἐλύομεν","ἐλύετε","ἔλυον"],c:0},
 {q:"Παρατατικός β΄ πληθυντικό;",a:["ἐλύετε","ἐλύομεν","ἔλυον"],c:0},
+{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔλυον","ἐλύομεν","ἐλύετε"],c:0},
 
-{q:"Αόριστος β΄ ενικό;",a:["ἔλυσας","ἔλυσε","ἔλυσα"],c:0},
-{q:"Αόριστος γ΄ ενικό;",a:["ἔλυσε","ἔλυσας","ἔλυσα"],c:0},
-{q:"Αόριστος α΄ πληθυντικό;",a:["ἐλύσαμεν","ἐλύσατε","ἔλυσαν"],c:0},
-{q:"Αόριστος β΄ πληθυντικό;",a:["ἐλύσατε","ἐλύσαμεν","ἔλυσαν"],c:0},
-{q:"Αόριστος γ΄ πληθυντικό;",a:["ἔλυσαν","ἐλύσατε","ἐλύσαμεν"],c:0},
-
+{q:"Μέλλοντας α΄ ενικό;",a:["λύσω","ἔλυσα","λέλυκα"],c:0},
 {q:"Μέλλοντας β΄ ενικό;",a:["λύσεις","λύσω","λύσει"],c:0},
 {q:"Μέλλοντας γ΄ ενικό;",a:["λύσει","λύσεις","λύσω"],c:0},
 {q:"Μέλλοντας α΄ πληθυντικό;",a:["λύσομεν","λύσετε","λύσουσι"],c:0},
 {q:"Μέλλοντας β΄ πληθυντικό;",a:["λύσετε","λύσομεν","λύσουσι"],c:0},
 {q:"Μέλλοντας γ΄ πληθυντικό;",a:["λύσουσι","λύσομεν","λύσετε"],c:0},
 
-{q:"Ποιος είναι ο παρακείμενος α΄ ενικό;",a:["λέλυκα","λύω","ἔλυσα"],c:0},
-{q:"Ποιος είναι ο ενεστώτας α΄ ενικό;",a:["λύω","λέλυκα","ἔλυσα"],c:0},
-{q:"Ποιος είναι ο αόριστος α΄ ενικό;",a:["ἔλυσα","λύω","λέλυκα"],c:0}
+{q:"Αόριστος α΄ ενικό;",a:["ἔλυσα","λύω","λέλυκα"],c:0},
+{q:"Αόριστος β΄ ενικό;",a:["ἔλυσας","ἔλυσε","ἔλυσα"],c:0},
+{q:"Αόριστος γ΄ ενικό;",a:["ἔλυσε","ἔλυσας","ἔλυσα"],c:0},
+{q:"Αόριστος α΄ πληθυντικό;",a:["ἐλύσαμεν","ἐλύσατε","ἔλυσαν"],c:0},
+{q:"Αόριστος β΄ πληθυντικό;",a:["ἐλύσατε","ἐλύσαμεν","ἔλυσαν"],c:0},
+{q:"Αόριστος γ΄ πληθυντικό;",a:["ἔλυσαν","ἐλύσατε","ἐλύσαμεν"],c:0},
 
-]
+{q:"Παρακείμενος α΄ ενικό;",a:["λέλυκα","ἔλυσα","λύω"],c:0},
+{q:"Παρακείμενος β΄ ενικό;",a:["λέλυκας","λέλυκε","λέλυκα"],c:0},
+{q:"Παρακείμενος γ΄ ενικό;",a:["λέλυκε","λέλυκας","λέλυκα"],c:0},
+{q:"Παρακείμενος α΄ πληθυντικό;",a:["λελύκαμεν","λέλυκας","λελύκατε"],c:0},
+{q:"Παρακείμενος β΄ πληθυντικό;",a:["λελύκατε","λελύκαμεν","λελύκασι"],c:0},
+{q:"Παρακείμενος γ΄ πληθυντικό;",a:["λελύκασι","λελύκαμεν","λελύκατε"],c:0},
 
+{q:"Υπερσυντέλικος α΄ ενικό;",a:["ἐλελύκη","ἐλελύκειν","ἐλελύκεσαν"],c:1},
+{q:"Υπερσυντέλικος β΄ ενικό;",a:["ἐλελύκεις","ἐλελύκειν","ἐλελύκετε"],c:0},
+{q:"Υπερσυντέλικος γ΄ ενικό;",a:["ἐλελύκει","ἐλελύκεις","ἐλελύκειν"],c:0},
+{q:"Υπερσυντέλικος α΄ πληθυντικό;",a:["ἐλελύκεμεν","ἐλελύκετε","ἐλελύκεισαν"],c:0},
+{q:"Υπερσυντέλικος β΄ πληθυντικό;",a:["ἐλελύκετε","ἐλελύκεμεν","ἐλελύκεισαν"],c:0},
+{q:"Υπερσυντέλικος γ΄ πληθυντικό;",a:["ἐλελύκεσαν","ἐλελύκετε","ἐλελύκεμεν"],c:0},
+
+{q:"Συντελεσμένος μέλλοντας α΄ ενικό;",a:["λελύξω","λέλυκα","λύσω"],c:0},
+{q:"Συντελεσμένος μέλλοντας β΄ ενικό;",a:["λελύξεις","λελύξω","λελύξει"],c:0},
+{q:"Συντελεσμένος μέλλοντας γ΄ ενικό;",a:["λελύξει","λελύξεις","λελύξω"],c:0},
+{q:"Συντελεσμένος μέλλοντας α΄ πληθυντικό;",a:["λελύξομεν","λελύξετε","λελύξουσι"],c:0}
+];
+
+// --- shuffle function ---
+function shuffle(arr){
+for(let i=arr.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+return arr;
+}
+
+// --- Game functions ---
 function startGame(){
-score=0
-step=0
-document.getElementById("score").textContent=0
-document.getElementById("start").classList.add("hidden")
-document.getElementById("game").classList.remove("hidden")
-showQuestion()
+score=0; step=0;
+document.getElementById("score").textContent=0;
+document.getElementById("start").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+shuffle(questions);
+showQuestion();
 }
 
 function showQuestion(){
+let q = questions[step];
+let answers = q.a.map((text,i)=>({text,correct:i===q.c}));
+shuffle(answers);
+document.getElementById("nextBtn").classList.add("hidden");
 
-let q=questions[step]
-
-document.getElementById("nextBtn").classList.add("hidden")
-
-let h=`<h3>Ερώτηση ${step+1}/30</h3><p>${q.q}</p>`
-
-q.a.forEach((opt,i)=>{
-h+=`<div class='choice' onclick='check(this,${i},${q.c})'>${opt}</div>`
-})
-
-qBox.innerHTML=h
+let h = `<h3>Ερώτηση ${step+1}/${questions.length}</h3><p>${q.q}</p>`;
+answers.forEach(ans=>{
+h+=`<div class='choice' onclick='check(this,${ans.correct})'>${ans.text}</div>`;
+});
+qBox.innerHTML = h;
 }
 
-function check(el,i,c){
-
-document.querySelectorAll(".choice").forEach(x=>x.onclick=null)
-
-if(i===c){
-el.classList.add("correct")
-score+=5
-}else{
-el.classList.add("wrong")
-}
-
-document.getElementById("score").textContent=score
-document.getElementById("nextBtn").classList.remove("hidden")
+function check(el,isCorrect){
+document.querySelectorAll(".choice").forEach(x=>x.onclick=null);
+if(isCorrect){ el.classList.add("correct"); score+=5; }
+else{ el.classList.add("wrong"); }
+document.getElementById("score").textContent = score;
+document.getElementById("nextBtn").classList.remove("hidden");
 }
 
 function nextQuestion(){
-
-step++
-
-if(step<30){
-showQuestion()
-}else{
-endGame()
-}
-
+step++;
+if(step < questions.length){ showQuestion(); } else { endGame(); }
 }
 
 function endGame(){
-
-document.getElementById("game").classList.add("hidden")
-
-let end=document.getElementById("end")
-
-end.classList.remove("hidden")
-
-end.innerHTML=`
-<h2>🎉 Τέλος Διαγωνισμού</h2>
-<p>Μπράβο ${document.getElementById("student").value}!</p>
-<p>Συγκέντρωσες <b>${score}</b> πόντους.</p>
-`
+document.getElementById("game").classList.add("hidden");
+let end=document.getElementById("end"); end.classList.remove("hidden");
+let name = document.getElementById("student").value || "μαθητή";
+end.innerHTML = `<h2>🎉 Τέλος Διαγωνισμού</h2>
+<p>Μπράβο ${name}!</p>
+<p>Συγκέντρωσες <b>${score}</b> πόντους.</p>`;
 }
-
 </script>
-
 </body>
 </html>
