@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>λύω Quiz</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#eef2ff;}
+header{background:#2563eb;color:white;text-align:center;padding:15px;}
+.container{max-width:700px;margin:auto;padding:20px;}
+.card{background:white;padding:20px;margin:15px 0;border-radius:12px;}
+.choice{border:1px solid #ccc;padding:10px;margin:8px 0;border-radius:8px;cursor:pointer;}
+.correct{background:#bbf7d0;}
+.wrong{background:#fecaca;}
+button{padding:10px 15px;border:none;background:#2563eb;color:white;border-radius:8px;}
+.hidden{display:none;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>📜 λύω – Ενεστώτας / Παρατατικός / Μέλλοντας</h2>
+</header>
+
+<div class="container">
+
+<div id="start" class="card">
+<input id="name" placeholder="Όνομα"><br><br>
+<button id="startBtn">Έναρξη</button>
+</div>
+
+<div id="game" class="hidden">
+<div class="card">Πόντοι: <b id="score">0</b></div>
+<div id="question" class="card"></div>
+<button id="next" class="hidden">Επόμενη</button>
+</div>
+
+<div id="end" class="card hidden"></div>
+
+</div>
+
+<script>
+
+let score=0;
+let step=0;
+
+// ✅ 40 ΕΡΩΤΗΣΕΙΣ
+const questions=[
+
+// Ενεστώτας
+{q:"Ενεστώτας α΄ ενικό;",a:["λύω","λύεις","λύει"],c:0},
+{q:"Ενεστώτας β΄ ενικό;",a:["λύεις","λύω","λύει"],c:0},
+{q:"Ενεστώτας γ΄ ενικό;",a:["λύει","λύεις","λύω"],c:0},
+{q:"Ενεστώτας α΄ πληθυντικό;",a:["λύομεν","λύετε","λύουσι"],c:0},
+{q:"Ενεστώτας β΄ πληθυντικό;",a:["λύετε","λύομεν","λύουσι"],c:0},
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύουσι","λύομεν","λύετε"],c:0},
+
+// Παρατατικός
+{q:"Παρατατικός α΄ ενικό;",a:["ἔλυον","λύω","λύσω"],c:0},
+{q:"Παρατατικός β΄ ενικό;",a:["ἔλυες","ἔλυον","ἔλυε"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυες","ἔλυον"],c:0},
+{q:"Παρατατικός α΄ πληθυντικό;",a:["ἐλύομεν","ἐλύετε","ἔλυον"],c:0},
+{q:"Παρατατικός β΄ πληθυντικό;",a:["ἐλύετε","ἐλύομεν","ἔλυον"],c:0},
+{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔλυον","ἐλύομεν","ἐλύετε"],c:0},
+
+// Μέλλοντας
+{q:"Μέλλοντας α΄ ενικό;",a:["λύσω","ἔλυσα","λέλυκα"],c:0},
+{q:"Μέλλοντας β΄ ενικό;",a:["λύσεις","λύσω","λύσει"],c:0},
+{q:"Μέλλοντας γ΄ ενικό;",a:["λύσει","λύσεις","λύσω"],c:0},
+{q:"Μέλλοντας α΄ πληθυντικό;",a:["λύσομεν","λύσετε","λύσουσι"],c:0},
+{q:"Μέλλοντας β΄ πληθυντικό;",a:["λύσετε","λύσομεν","λύσουσι"],c:0},
+{q:"Μέλλοντας γ΄ πληθυντικό;",a:["λύσουσι","λύσομεν","λύσετε"],c:0},
+
+// Μικτές (για να φτάσουμε 40)
+{q:"Ποιος είναι ενεστώτας;",a:["λύω","ἔλυον","λύσω"],c:0},
+{q:"Ποιος είναι παρατατικός;",a:["ἔλυον","λύω","λύσω"],c:0},
+{q:"Ποιος είναι μέλλοντας;",a:["λύσω","λύω","ἔλυον"],c:0},
+
+{q:"Βρες ενεστώτα:",a:["λύει","ἔλυε","λύσει"],c:0},
+{q:"Βρες παρατατικό:",a:["ἔλυες","λύεις","λύσεις"],c:0},
+{q:"Βρες μέλλοντα:",a:["λύσει","ἔλυε","λύει"],c:0},
+
+{q:"Ενεστώτας β΄ ενικό;",a:["λύεις","λύω","λύει"],c:0},
+{q:"Παρατατικός β΄ ενικό;",a:["ἔλυες","ἔλυον","ἔλυε"],c:0},
+{q:"Μέλλοντας β΄ ενικό;",a:["λύσεις","λύσω","λύσει"],c:0},
+
+{q:"Ενεστώτας γ΄ ενικό;",a:["λύει","λύεις","λύω"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυες","ἔλυον"],c:0},
+{q:"Μέλλοντας γ΄ ενικό;",a:["λύσει","λύσεις","λύσω"],c:0},
+
+{q:"Ενεστώτας α΄ πληθυντικό;",a:["λύομεν","λύετε","λύουσι"],c:0},
+{q:"Παρατατικός α΄ πληθυντικό;",a:["ἐλύομεν","ἐλύετε","ἔλυον"],c:0},
+{q:"Μέλλοντας α΄ πληθυντικό;",a:["λύσομεν","λύσετε","λύσουσι"],c:0},
+
+{q:"Ενεστώτας β΄ πληθυντικό;",a:["λύετε","λύομεν","λύουσι"],c:0},
+{q:"Παρατατικός β΄ πληθυντικό;",a:["ἐλύετε","ἐλύομεν","ἔλυον"],c:0},
+{q:"Μέλλοντας β΄ πληθυντικό;",a:["λύσετε","λύσομεν","λύσουσι"],c:0},
+
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύουσι","λύετε","λύομεν"],c:0},
+{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔλυον","ἐλύετε","ἐλύομεν"],c:0},
+{q:"Μέλλοντας γ΄ πληθυντικό;",a:["λύσουσι","λύσομεν","λύσετε"],c:0}
+];
+
+// shuffle
+function shuffle(arr){
+for(let i=arr.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+}
+
+// start
+document.getElementById("startBtn").onclick=()=>{
+score=0; step=0;
+document.getElementById("score").textContent=0;
+document.getElementById("start").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+shuffle(questions);
+show();
+};
+
+function show(){
+let q=questions[step];
+let box=document.getElementById("question");
+box.innerHTML=`<h3>${step+1}/${questions.length}</h3><p>${q.q}</p>`;
+
+let answers=q.a.map((t,i)=>({t,ok:i===q.c}));
+shuffle(answers);
+
+answers.forEach(a=>{
+let div=document.createElement("div");
+div.className="choice";
+div.textContent=a.t;
+
+div.onclick=()=>{
+document.querySelectorAll(".choice").forEach(x=>x.onclick=null);
+
+if(a.ok){div.classList.add("correct");score+=5;}
+else{div.classList.add("wrong");}
+
+document.getElementById("score").textContent=score;
+document.getElementById("next").classList.remove("hidden");
+};
+
+box.appendChild(div);
+});
+
+document.getElementById("next").classList.add("hidden");
+}
+
+document.getElementById("next").onclick=()=>{
+step++;
+if(step<questions.length) show();
+else end();
+};
+
+function end(){
+document.getElementById("game").classList.add("hidden");
+let name=document.getElementById("name").value||"μαθητή";
+document.getElementById("end").classList.remove("hidden");
+document.getElementById("end").innerHTML=`
+<h2>Τέλος!</h2>
+<p>Μπράβο ${name}</p>
+<p>Σκορ: ${score}</p>`;
+}
+
+</script>
+
+</body>
+</html>
