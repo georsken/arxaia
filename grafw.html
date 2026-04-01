@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>γράφω Quiz</title>
+
+<style>
+body{font-family:Arial;margin:0;background:#eef2ff;}
+header{background:#2563eb;color:white;text-align:center;padding:15px;}
+.container{max-width:700px;margin:auto;padding:20px;}
+.card{background:white;padding:20px;margin:15px 0;border-radius:12px;}
+.choice{border:1px solid #ccc;padding:10px;margin:8px 0;border-radius:8px;cursor:pointer;}
+.correct{background:#bbf7d0;}
+.wrong{background:#fecaca;}
+button{padding:10px 15px;border:none;background:#2563eb;color:white;border-radius:8px;}
+.hidden{display:none;}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>📜 γράφω – Ενεστώτας / Παρατατικός / Μέλλοντας</h2>
+</header>
+
+<div class="container">
+
+<div id="start" class="card">
+<input id="name" placeholder="Όνομα"><br><br>
+<button id="startBtn">Έναρξη</button>
+</div>
+
+<div id="game" class="hidden">
+<div class="card">Πόντοι: <b id="score">0</b></div>
+<div id="question" class="card"></div>
+<button id="next" class="hidden">Επόμενη</button>
+</div>
+
+<div id="end" class="card hidden"></div>
+
+</div>
+
+<script>
+
+let score=0;
+let step=0;
+
+const questions=[
+
+// Ενεστώτας
+{q:"Ενεστώτας α΄ ενικό;",a:["γράφω","γράφεις","γράφει"],c:0},
+{q:"Ενεστώτας β΄ ενικό;",a:["γράφεις","γράφω","γράφει"],c:0},
+{q:"Ενεστώτας γ΄ ενικό;",a:["γράφει","γράφεις","γράφω"],c:0},
+{q:"Ενεστώτας α΄ πληθυντικό;",a:["γράφομεν","γράφετε","γράφουσι"],c:0},
+{q:"Ενεστώτας β΄ πληθυντικό;",a:["γράφετε","γράφομεν","γράφουσι"],c:0},
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["γράφουσι","γράφομεν","γράφετε"],c:0},
+
+// Παρατατικός
+{q:"Παρατατικός α΄ ενικό;",a:["ἔγραφον","γράφω","γράψω"],c:0},
+{q:"Παρατατικός β΄ ενικό;",a:["ἔγραφες","ἔγραφον","ἔγραφε"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔγραφε","ἔγραφες","ἔγραφον"],c:0},
+{q:"Παρατατικός α΄ πληθυντικό;",a:["ἐγράφομεν","ἐγράφετε","ἔγραφον"],c:0},
+{q:"Παρατατικός β΄ πληθυντικό;",a:["ἐγράφετε","ἐγράφομεν","ἔγραφον"],c:0},
+{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔγραφον","ἐγράφομεν","ἐγράφετε"],c:0},
+
+// Μέλλοντας
+{q:"Μέλλοντας α΄ ενικό;",a:["γράψω","ἔγραψα","γέγραφα"],c:0},
+{q:"Μέλλοντας β΄ ενικό;",a:["γράψεις","γράψω","γράψει"],c:0},
+{q:"Μέλλοντας γ΄ ενικό;",a:["γράψει","γράψεις","γράψω"],c:0},
+{q:"Μέλλοντας α΄ πληθυντικό;",a:["γράψομεν","γράψετε","γράψουσι"],c:0},
+{q:"Μέλλοντας β΄ πληθυντικό;",a:["γράψετε","γράψομεν","γράψουσι"],c:0},
+{q:"Μέλλοντας γ΄ πληθυντικό;",a:["γράψουσι","γράψομεν","γράψετε"],c:0},
+
+// Μικτές (20 ακόμα)
+{q:"Ποιος είναι ενεστώτας;",a:["γράφω","ἔγραφον","γράψω"],c:0},
+{q:"Ποιος είναι παρατατικός;",a:["ἔγραφον","γράφω","γράψω"],c:0},
+{q:"Ποιος είναι μέλλοντας;",a:["γράψω","γράφω","ἔγραφον"],c:0},
+
+{q:"Βρες ενεστώτα:",a:["γράφει","ἔγραφε","γράψει"],c:0},
+{q:"Βρες παρατατικό:",a:["ἔγραφες","γράφεις","γράψεις"],c:0},
+{q:"Βρες μέλλοντα:",a:["γράψει","ἔγραφε","γράφει"],c:0},
+
+{q:"Ενεστώτας β΄ ενικό;",a:["γράφεις","γράφω","γράφει"],c:0},
+{q:"Παρατατικός β΄ ενικό;",a:["ἔγραφες","ἔγραφον","ἔγραφε"],c:0},
+{q:"Μέλλοντας β΄ ενικό;",a:["γράψεις","γράψω","γράψει"],c:0},
+
+{q:"Ενεστώτας γ΄ ενικό;",a:["γράφει","γράφεις","γράφω"],c:0},
+{q:"Παρατατικός γ΄ ενικό;",a:["ἔγραφε","ἔγραφες","ἔγραφον"],c:0},
+{q:"Μέλλοντας γ΄ ενικό;",a:["γράψει","γράψεις","γράψω"],c:0},
+
+{q:"Ενεστώτας α΄ πληθυντικό;",a:["γράφομεν","γράφετε","γράφουσι"],c:0},
+{q:"Παρατατικός α΄ πληθυντικό;",a:["ἐγράφομεν","ἐγράφετε","ἔγραφον"],c:0},
+{q:"Μέλλοντας α΄ πληθυντικό;",a:["γράψομεν","γράψετε","γράψουσι"],c:0},
+
+{q:"Ενεστώτας β΄ πληθυντικό;",a:["γράφετε","γράφομεν","γράφουσι"],c:0},
+{q:"Παρατατικός β΄ πληθυντικό;",a:["ἐγράφετε","ἐγράφομεν","ἔγραφον"],c:0},
+{q:"Μέλλοντας β΄ πληθυντικό;",a:["γράψετε","γράψομεν","γράψουσι"],c:0},
+
+{q:"Ενεστώτας γ΄ πληθυντικό;",a:["γράφουσι","γράφετε","γράφομεν"],c:0},
+{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔγραφον","ἐγράφετε","ἐγράφομεν"],c:0},
+{q:"Μέλλοντας γ΄ πληθυντικό;",a:["γράψουσι","γράψομεν","γράψετε"],c:0}
+
+];
+
+// shuffle
+function shuffle(arr){
+for(let i=arr.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+}
+
+// start
+document.getElementById("startBtn").onclick=()=>{
+score=0; step=0;
+document.getElementById("score").textContent=0;
+document.getElementById("start").classList.add("hidden");
+document.getElementById("game").classList.remove("hidden");
+shuffle(questions);
+show();
+};
+
+function show(){
+let q=questions[step];
+let box=document.getElementById("question");
+box.innerHTML=`<h3>${step+1}/${questions.length}</h3><p>${q.q}</p>`;
+
+let answers=q.a.map((t,i)=>({t,ok:i===q.c}));
+shuffle(answers);
+
+answers.forEach(a=>{
+let div=document.createElement("div");
+div.className="choice";
+div.textContent=a.t;
+
+div.onclick=()=>{
+document.querySelectorAll(".choice").forEach(x=>x.onclick=null);
+
+if(a.ok){div.classList.add("correct");score+=5;}
+else{div.classList.add("wrong");}
+
+document.getElementById("score").textContent=score;
+document.getElementById("next").classList.remove("hidden");
+};
+
+box.appendChild(div);
+});
+
+document.getElementById("next").classList.add("hidden");
+}
+
+document.getElementById("next").onclick=()=>{
+step++;
+if(step<questions.length) show();
+else end();
+};
+
+function end(){
+document.getElementById("game").classList.add("hidden");
+let name=document.getElementById("name").value||"μαθητή";
+document.getElementById("end").classList.remove("hidden");
+document.getElementById("end").innerHTML=`
+<h2>Τέλος!</h2>
+<p>Μπράβο ${name}</p>
+<p>Σκορ: ${score}</p>`;
+}
+
+</script>
+
+</body>
+</html>
