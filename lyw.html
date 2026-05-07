@@ -4,189 +4,508 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Διαγωνισμός Αρχαίων Ελληνικών – λύω</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-:root{--main:#2563eb;}
-body{margin:0;font-family:'Manrope',system-ui;background:linear-gradient(180deg,#eef2ff,#dbeafe);}
-header{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:white;text-align:center;padding:22px;}
-.container{max-width:900px;margin:auto;padding:20px;}
-.card{background:white;border-radius:16px;padding:20px;margin:16px 0;box-shadow:0 10px 20px rgba(0,0,0,.1);}
-button{background:#2563eb;color:white;border:none;padding:12px 18px;border-radius:10px;cursor:pointer;font-size:16px;}
-.choice{border:2px solid #ddd;border-radius:12px;padding:12px;margin:10px 0;cursor:pointer;}
-.choice.correct{background:#bbf7d0;border-color:#16a34a;}
-.choice.wrong{background:#fecaca;border-color:#dc2626;}
-.hidden{display:none}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap');
+
+:root{
+  --gold:#c9a84c;
+  --gold2:#f0d080;
+  --deep:#0a0a1a;
+  --ink:#12122a;
+  --paper:#f5f0e8;
+  --marble:#e8e4dc;
+  --accent:#8b1a1a;
+  --correct:#1a5e2a;
+  --wrong:#6b1010;
+  --glow:rgba(201,168,76,0.35);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Crimson Pro',Georgia,serif;
+  background:var(--deep);
+  color:var(--paper);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.12) 0%, transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(201,168,76,0.03) 60px,rgba(201,168,76,0.03) 61px),
+    repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(201,168,76,0.03) 60px,rgba(201,168,76,0.03) 61px);
+  pointer-events:none;z-index:0;
+}
+
+.wrap{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:24px 16px;}
+
+header{
+  text-align:center;
+  padding:40px 20px 30px;
+  position:relative;
+}
+.header-ornament{
+  font-size:11px;letter-spacing:6px;color:var(--gold);
+  text-transform:uppercase;margin-bottom:10px;opacity:.8;
+}
+header h1{
+  font-family:'Cinzel',serif;
+  font-size:clamp(28px,5vw,48px);
+  font-weight:900;
+  color:var(--gold2);
+  text-shadow:0 0 40px var(--glow),0 2px 0 rgba(0,0,0,.8);
+  letter-spacing:3px;
+  line-height:1.1;
+  margin-bottom:8px;
+}
+header p{
+  font-size:18px;
+  color:var(--marble);
+  font-style:italic;
+  opacity:.85;
+}
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:20px auto;max-width:400px;
+}
+.divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.divider-sym{color:var(--gold);font-size:20px;}
+
+.card{
+  background:linear-gradient(145deg,rgba(30,26,18,0.95),rgba(20,16,10,0.98));
+  border:1px solid rgba(201,168,76,0.3);
+  border-radius:4px;
+  padding:32px;
+  margin:16px 0;
+  box-shadow:0 8px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(201,168,76,0.15);
+  position:relative;
+}
+.card::before{
+  content:'';position:absolute;
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:2px;
+  inset:6px;pointer-events:none;
+}
+
+#startCard h2{
+  font-family:'Cinzel',serif;font-size:22px;
+  color:var(--gold2);margin-bottom:20px;text-align:center;
+}
+.field-label{
+  font-family:'Cinzel',serif;font-size:12px;letter-spacing:3px;
+  color:var(--gold);opacity:.8;display:block;margin-bottom:8px;
+}
+.field-input{
+  width:100%;background:rgba(255,255,255,0.05);
+  border:1px solid rgba(201,168,76,0.4);
+  border-radius:2px;padding:12px 16px;
+  color:var(--paper);font-family:'Crimson Pro',serif;font-size:18px;
+  outline:none;transition:border-color .3s,box-shadow .3s;
+}
+.field-input:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 15px rgba(201,168,76,0.2);
+}
+.school-select{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0;
+}
+.school-btn{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,168,76,0.25);
+  border-radius:2px;padding:10px 8px;
+  color:var(--marble);font-family:'Crimson Pro',serif;font-size:15px;
+  cursor:pointer;transition:all .25s;text-align:center;
+}
+.school-btn:hover,.school-btn.selected{
+  background:rgba(201,168,76,0.15);
+  border-color:var(--gold);color:var(--gold2);
+}
+.start-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--gold),#a07820,var(--gold));
+  background-size:200% 100%;
+  color:var(--deep);font-family:'Cinzel',serif;
+  font-size:16px;letter-spacing:3px;font-weight:700;
+  border:none;border-radius:2px;padding:16px;
+  cursor:pointer;transition:all .35s;margin-top:10px;
+  text-transform:uppercase;
+}
+.start-btn:hover{background-position:100% 0;box-shadow:0 0 30px rgba(201,168,76,0.5);}
+
+.scorebar{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(201,168,76,0.08);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:2px;padding:14px 24px;
+  margin-bottom:16px;
+}
+.score-block{text-align:center;}
+.score-label{font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);opacity:.7;}
+.score-val{font-family:'Cinzel',serif;font-size:26px;color:var(--gold2);font-weight:700;}
+
+.progress-wrap{margin-bottom:20px;}
+.progress-meta{
+  display:flex;justify-content:space-between;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;
+  color:var(--gold);opacity:.7;margin-bottom:6px;
+}
+.progress-bar{
+  width:100%;height:4px;
+  background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--gold));
+  border-radius:2px;transition:width .5s ease;
+}
+
+.q-tense{
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;
+  color:var(--gold);opacity:.7;margin-bottom:8px;
+  text-transform:uppercase;
+}
+.q-text{
+  font-size:clamp(20px,3vw,26px);
+  color:var(--paper);line-height:1.4;
+  margin-bottom:24px;font-weight:300;
+}
+.q-text strong{color:var(--gold2);font-weight:600;}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.choices{grid-template-columns:1fr;}}
+.choice{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(201,168,76,0.2);
+  border-radius:2px;padding:16px 20px;
+  cursor:pointer;
+  font-family:'Crimson Pro',serif;font-size:20px;
+  color:var(--marble);
+  transition:all .22s;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.choice::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,0),rgba(201,168,76,0.1));
+  opacity:0;transition:opacity .22s;
+}
+.choice:hover::before{opacity:1;}
+.choice:hover{
+  border-color:var(--gold);color:var(--gold2);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px rgba(201,168,76,0.2);
+}
+.choice.correct{
+  background:rgba(26,94,42,0.4)!important;
+  border-color:#4ade80!important;color:#bbf7d0!important;
+  pointer-events:none;
+}
+.choice.wrong{
+  background:rgba(107,16,16,0.4)!important;
+  border-color:#f87171!important;color:#fecaca!important;
+  pointer-events:none;
+}
+.choice.correct::after{content:'✓';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#4ade80;}
+.choice.wrong::after{content:'✗';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#f87171;}
+.choice.disabled{pointer-events:none;opacity:.5;}
+
+.feedback-text{
+  margin-top:14px;padding:12px 16px;
+  border-radius:2px;font-size:17px;text-align:center;
+  font-style:italic;
+}
+.feedback-text.ok{background:rgba(26,94,42,0.25);border:1px solid rgba(74,222,128,0.3);color:#86efac;}
+.feedback-text.err{background:rgba(107,16,16,0.25);border:1px solid rgba(248,113,113,0.3);color:#fca5a5;}
+
+.next-btn{
+  display:block;width:100%;
+  background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));
+  border:1px solid var(--gold);border-radius:2px;
+  color:var(--gold2);font-family:'Cinzel',serif;
+  font-size:14px;letter-spacing:3px;
+  padding:14px;cursor:pointer;margin-top:16px;
+  transition:all .25s;text-transform:uppercase;
+}
+.next-btn:hover{background:rgba(201,168,76,0.2);box-shadow:0 0 20px rgba(201,168,76,0.25);}
+
+#endCard{text-align:center;}
+.trophy{font-size:72px;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+#endCard h2{font-family:'Cinzel',serif;font-size:32px;color:var(--gold2);margin-bottom:8px;}
+.final-score{
+  font-family:'Cinzel',serif;font-size:54px;color:var(--gold2);
+  text-shadow:0 0 30px var(--glow);margin:12px 0;
+  font-weight:900;
+}
+.score-max{font-size:20px;opacity:.6;color:var(--marble);}
+.pct{font-size:18px;color:var(--marble);font-style:italic;margin-bottom:24px;}
+
+.lb-title{font-family:'Cinzel',serif;font-size:14px;letter-spacing:4px;color:var(--gold);margin:20px 0 12px;text-transform:uppercase;}
+.lb{list-style:none;}
+.lb li{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 16px;margin:6px 0;border-radius:2px;
+  font-size:17px;transition:all .3s;
+}
+.lb li.me{
+  background:linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.08));
+  border:1px solid rgba(201,168,76,0.5);
+  color:var(--gold2);font-weight:600;
+}
+.lb li:not(.me){background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);color:var(--marble);}
+.lb-medal{font-size:20px;width:28px;text-align:center;}
+.lb-name{flex:1;}
+.lb-pts{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);opacity:.8;}
+
+.restart-btn{
+  margin-top:24px;
+  background:linear-gradient(135deg,var(--gold),#a07820);
+  color:var(--deep);font-family:'Cinzel',serif;
+  font-size:14px;letter-spacing:3px;font-weight:700;
+  border:none;border-radius:2px;padding:14px 32px;
+  cursor:pointer;transition:all .3s;text-transform:uppercase;
+}
+.restart-btn:hover{box-shadow:0 0 30px rgba(201,168,76,0.5);transform:scale(1.02);}
+
+.hidden{display:none!important;}
 </style>
 </head>
-
 <body>
 
-<header>
-<h1>📜 Διαγωνισμός Αρχαίων Ελληνικών</h1>
-<p>Ρήμα «λύω» – Οριστική</p>
-</header>
+<div class="wrap">
+  <header>
+    <div class="header-ornament">✦ Αρχαία Ελληνικά ✦</div>
+    <h1>ΔΙΑΓΩΝΙΣΜΟΣ</h1>
+    <p>Ρήμα <em>λύω</em> — Οριστική Έγκλιση</p>
+    <div class="divider"><div class="divider-line"></div><div class="divider-sym">☽</div><div class="divider-line"></div></div>
+  </header>
 
-<div class="container">
+  <!-- START -->
+  <div class="card" id="startCard">
+    <h2>⚔️ Εισαγωγή Στοιχείων</h2>
+    <label class="field-label">Όνομα Μαθητή</label>
+    <input class="field-input" id="studentName" placeholder="Γράψε το όνομά σου…">
+    <br><br>
+    <label class="field-label">Σχολείο</label>
+    <div class="school-select" id="schoolSelect">
+      <div class="school-btn" onclick="selectSchool(this,'1ο Γυμνάσιο Π. Φαλήρου')">1ο Γυμνάσιο Π. Φαλήρου</div>
+      <div class="school-btn" onclick="selectSchool(this,'2ο Γυμνάσιο Π. Φαλήρου')">2ο Γυμνάσιο Π. Φαλήρου</div>
+      <div class="school-btn" onclick="selectSchool(this,'8ο Γυμνάσιο Λάρισας')">8ο Γυμνάσιο Λάρισας</div>
+      <div class="school-btn" onclick="selectSchool(this,'Γυμνάσιο Μοσχάτου')">Γυμνάσιο Μοσχάτου</div>
+    </div>
+    <input class="field-input" id="schoolCustom" placeholder="ή γράψε το σχολείο σου…" style="margin-bottom:16px;">
+    <button class="start-btn" onclick="startGame()">▶ Έναρξη Διαγωνισμού</button>
+  </div>
 
-<div class="card" id="start">
-<label>Όνομα:</label><br>
-<input id="student" placeholder="π.χ. Μαρία"><br><br>
-<button onclick="startGame()">Έναρξη</button>
-</div>
+  <!-- GAME -->
+  <div id="gameArea" class="hidden">
+    <div class="scorebar">
+      <div class="score-block">
+        <div class="score-label">Πόντοι</div>
+        <div class="score-val" id="scoreVal">0</div>
+      </div>
+      <div class="score-block">
+        <div class="score-label">Σωστές</div>
+        <div class="score-val" id="correctVal">0</div>
+      </div>
+      <div class="score-block">
+        <div class="score-label">Ερώτηση</div>
+        <div class="score-val" id="qNum">1/40</div>
+      </div>
+    </div>
 
-<div id="game" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>Πρόοδος</span><span id="pctText">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
 
-<div class="card">
-Πόντοι: <b id="score">0</b>
-</div>
+    <div class="card" id="questionCard">
+      <div class="q-tense" id="qTense"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="choices" id="choicesBox"></div>
+      <div id="feedback" class="hidden"></div>
+      <button class="next-btn hidden" id="nextBtn" onclick="nextQuestion()">Επόμενη Ερώτηση →</button>
+    </div>
+  </div>
 
-<div class="card" id="questionBox"></div>
-
-<button id="nextBtn" class="hidden" onclick="nextQuestion()">Επόμενη</button>
-
-</div>
-
-<div id="end" class="card hidden"></div>
-
+  <!-- END -->
+  <div class="card hidden" id="endCard">
+    <div class="trophy">🏆</div>
+    <h2>Τέλος Διαγωνισμού!</h2>
+    <div class="final-score" id="finalScore">0</div>
+    <div class="score-max">από <span id="maxScore">0</span> πόντους</div>
+    <div class="pct" id="finalPct"></div>
+    <div class="divider"><div class="divider-line"></div><div class="divider-sym">★</div><div class="divider-line"></div></div>
+    <div class="lb-title">🏛️ Κατάταξη Σχολείων</div>
+    <ul class="lb" id="leaderboard"></ul>
+    <button class="restart-btn" onclick="restart()">↩ Νέος Διαγωνισμός</button>
+  </div>
 </div>
 
 <script>
-
-// --- Μεταβλητές ---
-let score = 0;
-let step = 0;
-const qBox = document.getElementById("questionBox");
-
-// --- Ερωτήσεις ---
-const questions = [
-
-{q:"Ενεστώτας α΄ ενικό;",a:["λύεις","λύω","λύει"],c:1},
-{q:"Ενεστώτας β΄ ενικό;",a:["λύει","λύεις","λύω"],c:1},
-{q:"Ενεστώτας γ΄ ενικό;",a:["λύει","λύεις","λύω"],c:0},
-{q:"Ενεστώτας α΄ πληθυντικό;",a:["λύομεν","λύετε","λύουσι"],c:0},
-{q:"Ενεστώτας β΄ πληθυντικό;",a:["λύομεν","λύουσι","λύετε"],c:2},
-{q:"Ενεστώτας γ΄ πληθυντικό;",a:["λύετε","λύουσι","λύομεν"],c:1},
-
-{q:"Παρατατικός α΄ ενικό;",a:["ἔλυον","λύω","λύσω"],c:0},
-{q:"Παρατατικός β΄ ενικό;",a:["ἔλυες","ἔλυον","ἔλυε"],c:0},
-{q:"Παρατατικός γ΄ ενικό;",a:["ἔλυε","ἔλυες","ἔλυον"],c:0},
-{q:"Παρατατικός α΄ πληθυντικό;",a:["ἐλύομεν","ἐλύετε","ἔλυον"],c:0},
-{q:"Παρατατικός β΄ πληθυντικό;",a:["ἐλύετε","ἐλύομεν","ἔλυον"],c:0},
-{q:"Παρατατικός γ΄ πληθυντικό;",a:["ἔλυον","ἐλύομεν","ἐλύετε"],c:0},
-
-{q:"Μέλλοντας α΄ ενικό;",a:["λύσω","ἔλυσα","λέλυκα"],c:0},
-{q:"Μέλλοντας β΄ ενικό;",a:["λύσεις","λύσω","λύσει"],c:0},
-{q:"Μέλλοντας γ΄ ενικό;",a:["λύσει","λύσεις","λύσω"],c:0},
-{q:"Μέλλοντας α΄ πληθυντικό;",a:["λύσομεν","λύσετε","λύσουσι"],c:0},
-{q:"Μέλλοντας β΄ πληθυντικό;",a:["λύσετε","λύσομεν","λύσουσι"],c:0},
-{q:"Μέλλοντας γ΄ πληθυντικό;",a:["λύσουσι","λύσομεν","λύσετε"],c:0},
-
-{q:"Αόριστος α΄ ενικό;",a:["ἔλυσα","λύω","λέλυκα"],c:0},
-{q:"Αόριστος β΄ ενικό;",a:["ἔλυσας","ἔλυσε","ἔλυσα"],c:0},
-{q:"Αόριστος γ΄ ενικό;",a:["ἔλυσε","ἔλυσας","ἔλυσα"],c:0},
-{q:"Αόριστος α΄ πληθυντικό;",a:["ἐλύσαμεν","ἐλύσατε","ἔλυσαν"],c:0},
-{q:"Αόριστος β΄ πληθυντικό;",a:["ἐλύσατε","ἐλύσαμεν","ἔλυσαν"],c:0},
-{q:"Αόριστος γ΄ πληθυντικό;",a:["ἔλυσαν","ἐλύσατε","ἐλύσαμεν"],c:0},
-
-{q:"Παρακείμενος α΄ ενικό;",a:["λέλυκα","ἔλυσα","λύω"],c:0},
-{q:"Παρακείμενος β΄ ενικό;",a:["λέλυκας","λέλυκε","λέλυκα"],c:0},
-{q:"Παρακείμενος γ΄ ενικό;",a:["λέλυκε","λέλυκας","λέλυκα"],c:0},
-{q:"Παρακείμενος α΄ πληθυντικό;",a:["λελύκαμεν","λέλυκας","λελύκατε"],c:0},
-{q:"Παρακείμενος β΄ πληθυντικό;",a:["λελύκατε","λελύκαμεν","λελύκασι"],c:0},
-{q:"Παρακείμενος γ΄ πληθυντικό;",a:["λελύκασι","λελύκαμεν","λελύκατε"],c:0},
-
-{q:"Υπερσυντέλικος α΄ ενικό;",a:["ἐλελύκη","ἐλελύκειν","ἐλελύκεσαν"],c:1},
-{q:"Υπερσυντέλικος β΄ ενικό;",a:["ἐλελύκεις","ἐλελύκειν","ἐλελύκετε"],c:0},
-{q:"Υπερσυντέλικος γ΄ ενικό;",a:["ἐλελύκει","ἐλελύκεις","ἐλελύκειν"],c:0},
-{q:"Υπερσυντέλικος α΄ πληθυντικό;",a:["ἐλελύκεμεν","ἐλελύκετε","ἐλελύκεισαν"],c:0},
-{q:"Υπερσυντέλικος β΄ πληθυντικό;",a:["ἐλελύκετε","ἐλελύκεμεν","ἐλελύκεισαν"],c:0},
-{q:"Υπερσυντέλικος γ΄ πληθυντικό;",a:["ἐλελύκεσαν","ἐλελύκετε","ἐλελύκεμεν"],c:0},
-
-{q:"Συντελεσμένος μέλλοντας α΄ ενικό;",a:["λελύξω","λέλυκα","λύσω"],c:0},
-{q:"Συντελεσμένος μέλλοντας β΄ ενικό;",a:["λελύξεις","λελύξω","λελύξει"],c:0},
-{q:"Συντελεσμένος μέλλοντας γ΄ ενικό;",a:["λελύξει","λελύξεις","λελύξω"],c:0},
-{q:"Συντελεσμένος μέλλοντας α΄ πληθυντικό;",a:["λελύξομεν","λελύξετε","λελύξουσι"],c:0}
-
+const allQuestions = [
+// Ενεστώτας (6)
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Ενεστώτα;",answers:["λύω","λύεις","λύει","λύομεν"],correct:0},
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Ενεστώτα;",answers:["λύω","λύεις","λύει","λύετε"],correct:1},
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Ενεστώτα;",answers:["λύεις","λύω","λύει","λύουσι"],correct:2},
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Ενεστώτα;",answers:["λύετε","λύουσι","λύω","λύομεν"],correct:3},
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Ενεστώτα;",answers:["λύομεν","λύετε","λύουσι","λύω"],correct:1},
+{tense:"Ενεστώτας",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Ενεστώτα;",answers:["λύουσι","λύομεν","λύετε","λύω"],correct:0},
+// Παρατατικός (6)
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Παρατατικού;",answers:["ἔλυον","ἔλυες","ἔλυε","ἐλύομεν"],correct:0},
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Παρατατικού;",answers:["ἔλυον","ἔλυες","ἔλυε","ἐλύετε"],correct:1},
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Παρατατικού;",answers:["ἔλυον","ἔλυες","ἔλυε","ἐλύομεν"],correct:2},
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Παρατατικού;",answers:["ἐλύομεν","ἐλύετε","ἔλυον","ἔλυε"],correct:0},
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Παρατατικού;",answers:["ἐλύομεν","ἔλυον","ἐλύετε","ἔλυες"],correct:2},
+{tense:"Παρατατικός",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Παρατατικού;",answers:["ἐλύομεν","ἐλύετε","ἔλυε","ἔλυον"],correct:3},
+// Μέλλοντας (6)
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Μέλλοντα;",answers:["λύσεις","λύσω","λύσει","λύσομεν"],correct:1},
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Μέλλοντα;",answers:["λύσω","λύσεις","λύσει","λύσετε"],correct:1},
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Μέλλοντα;",answers:["λύσεις","λύσω","λύσει","λύσουσι"],correct:2},
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Μέλλοντα;",answers:["λύσομεν","λύσετε","λύσουσι","λύσω"],correct:0},
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Μέλλοντα;",answers:["λύσουσι","λύσομεν","λύσω","λύσετε"],correct:3},
+{tense:"Μέλλοντας",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Μέλλοντα;",answers:["λύσομεν","λύσετε","λύσουσι","λύσω"],correct:2},
+// Αόριστος (6)
+{tense:"Αόριστος",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Αορίστου;",answers:["ἔλυσα","ἔλυσας","ἔλυσε","ἐλύσαμεν"],correct:0},
+{tense:"Αόριστος",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Αορίστου;",answers:["ἔλυσε","ἔλυσα","ἔλυσας","ἐλύσατε"],correct:2},
+{tense:"Αόριστος",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Αορίστου;",answers:["ἔλυσα","ἔλυσας","ἔλυσε","ἔλυσαν"],correct:2},
+{tense:"Αόριστος",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Αορίστου;",answers:["ἐλύσαμεν","ἐλύσατε","ἔλυσαν","ἔλυσε"],correct:0},
+{tense:"Αόριστος",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Αορίστου;",answers:["ἔλυσαν","ἐλύσαμεν","ἔλυσα","ἐλύσατε"],correct:3},
+{tense:"Αόριστος",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Αορίστου;",answers:["ἐλύσατε","ἔλυσαν","ἐλύσαμεν","ἔλυσε"],correct:1},
+// Παρακείμενος (6)
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Παρακειμένου;",answers:["λέλυκας","λέλυκε","λέλυκα","λελύκαμεν"],correct:2},
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Παρακειμένου;",answers:["λέλυκα","λέλυκας","λέλυκε","λελύκατε"],correct:1},
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Παρακειμένου;",answers:["λέλυκα","λέλυκας","λελύκαμεν","λέλυκε"],correct:3},
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Παρακειμένου;",answers:["λελύκαμεν","λελύκατε","λελύκασι","λέλυκε"],correct:0},
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Παρακειμένου;",answers:["λελύκασι","λελύκαμεν","λελύκατε","λέλυκα"],correct:2},
+{tense:"Παρακείμενος",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Παρακειμένου;",answers:["λελύκαμεν","λελύκασι","λελύκατε","λέλυκε"],correct:1},
+// Υπερσυντέλικος (5)
+{tense:"Υπερσυντέλικος",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Υπερσυντελίκου;",answers:["ἐλελύκεις","ἐλελύκειν","ἐλελύκει","ἐλελύκεμεν"],correct:1},
+{tense:"Υπερσυντέλικος",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Υπερσυντελίκου;",answers:["ἐλελύκειν","ἐλελύκεις","ἐλελύκει","ἐλελύκετε"],correct:1},
+{tense:"Υπερσυντέλικος",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Υπερσυντελίκου;",answers:["ἐλελύκειν","ἐλελύκεις","ἐλελύκει","ἐλελύκεμεν"],correct:2},
+{tense:"Υπερσυντέλικος",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Υπερσυντελίκου;",answers:["ἐλελύκεμεν","ἐλελύκετε","ἐλελύκεσαν","ἐλελύκει"],correct:0},
+{tense:"Υπερσυντέλικος",q:"Ποια είναι η <strong>β΄ πληθυντικού</strong> του Υπερσυντελίκου;",answers:["ἐλελύκεσαν","ἐλελύκεμεν","ἐλελύκετε","ἐλελύκειν"],correct:2},
+// Συντελεσμένος Μέλλοντας (5)
+{tense:"Συντελεσμένος Μέλλοντας",q:"Ποια είναι η <strong>α΄ ενικού</strong> του Συντελεσμένου Μέλλοντα;",answers:["λελύξεις","λελύξω","λελύξει","λελύξομεν"],correct:1},
+{tense:"Συντελεσμένος Μέλλοντας",q:"Ποια είναι η <strong>β΄ ενικού</strong> του Συντελεσμένου Μέλλοντα;",answers:["λελύξω","λελύξεις","λελύξει","λελύξετε"],correct:1},
+{tense:"Συντελεσμένος Μέλλοντας",q:"Ποια είναι η <strong>γ΄ ενικού</strong> του Συντελεσμένου Μέλλοντα;",answers:["λελύξεις","λελύξω","λελύξει","λελύξουσι"],correct:2},
+{tense:"Συντελεσμένος Μέλλοντας",q:"Ποια είναι η <strong>α΄ πληθυντικού</strong> του Συντελεσμένου Μέλλοντα;",answers:["λελύξομεν","λελύξετε","λελύξουσι","λελύξω"],correct:0},
+{tense:"Συντελεσμένος Μέλλοντας",q:"Ποια είναι η <strong>γ΄ πληθυντικού</strong> του Συντελεσμένου Μέλλοντα;",answers:["λελύξομεν","λελύξετε","λελύξουσι","λελύξεις"],correct:2},
 ];
 
-// --- shuffle ---
-function shuffle(arr){
-for(let i=arr.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[arr[i],arr[j]]=[arr[j],arr[i]];
-}
-return arr;
+let score=0,correct=0,step=0,questions=[],mySchool='';
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function $(id){return document.getElementById(id);}
+
+let selectedSchoolBtn=null;
+function selectSchool(el,name){
+  if(selectedSchoolBtn)selectedSchoolBtn.classList.remove('selected');
+  selectedSchoolBtn=el;el.classList.add('selected');
+  $('schoolCustom').value='';
 }
 
 function startGame(){
-score=0; step=0;
-document.getElementById("score").textContent=0;
-document.getElementById("start").classList.add("hidden");
-document.getElementById("game").classList.remove("hidden");
-shuffle(questions);
-showQuestion();
+  let name=$('studentName').value.trim()||'Μαθητής';
+  mySchool=$('schoolCustom').value.trim()||(selectedSchoolBtn?selectedSchoolBtn.textContent:'Το σχολείο μου');
+  score=0;correct=0;step=0;
+  questions=shuffle([...allQuestions]);
+  $('startCard').classList.add('hidden');
+  $('gameArea').classList.remove('hidden');
+  updateScore();showQuestion();
+}
+
+function updateScore(){
+  $('scoreVal').textContent=score;
+  $('correctVal').textContent=correct;
+  $('qNum').textContent=(step+1)+'/'+questions.length;
+  let p=Math.round(step/questions.length*100);
+  $('progressFill').style.width=p+'%';
+  $('pctText').textContent=p+'%';
 }
 
 function showQuestion(){
-let q = questions[step];
-let answers = q.a.map((text,i)=>({text,correct:i===q.c}));
-shuffle(answers);
-document.getElementById("nextBtn").classList.add("hidden");
-
-let h = `<h3>Ερώτηση ${step+1}/${questions.length}</h3><p>${q.q}</p>`;
-answers.forEach(ans=>{
-h+=`<div class='choice' onclick='check(this,${ans.correct})'>${ans.text}</div>`;
-});
-qBox.innerHTML = h;
+  let q=questions[step];
+  $('qTense').textContent='⟡ '+q.tense;
+  $('qText').innerHTML=q.q;
+  let fb=$('feedback');fb.className='hidden';fb.textContent='';
+  $('nextBtn').classList.add('hidden');
+  let items=q.answers.map((t,i)=>({t,ok:i===q.correct}));
+  shuffle(items);
+  let box=$('choicesBox');
+  box.innerHTML='';
+  items.forEach(item=>{
+    let d=document.createElement('div');
+    d.className='choice';
+    d.textContent=item.t;
+    d.onclick=()=>check(d,item.ok,items);
+    box.appendChild(d);
+  });
+  updateScore();
 }
 
-function check(el,isCorrect){
-document.querySelectorAll(".choice").forEach(x=>x.onclick=null);
-if(isCorrect){ el.classList.add("correct"); score+=5; }
-else{ el.classList.add("wrong"); }
-document.getElementById("score").textContent = score;
-document.getElementById("nextBtn").classList.remove("hidden");
+function check(el,isOk,items){
+  document.querySelectorAll('.choice').forEach(c=>{c.onclick=null;c.classList.add('disabled');});
+  let fb=$('feedback');
+  if(isOk){
+    el.classList.add('correct');el.classList.remove('disabled');
+    score+=5;correct++;
+    fb.className='feedback-text ok';fb.textContent='✓ Σωστά! Μπράβο!';
+  } else {
+    el.classList.add('wrong');el.classList.remove('disabled');
+    document.querySelectorAll('.choice').forEach(c=>{
+      let mi=items.find(x=>x.t===c.textContent);
+      if(mi&&mi.ok){c.classList.add('correct');c.classList.remove('disabled');}
+    });
+    fb.className='feedback-text err';fb.textContent='✗ Λάθος. Η σωστή απάντηση έχει επισημανθεί.';
+  }
+  fb.classList.remove('hidden');
+  $('scoreVal').textContent=score;
+  $('correctVal').textContent=correct;
+  $('nextBtn').classList.remove('hidden');
 }
 
 function nextQuestion(){
-step++;
-if(step < questions.length){ showQuestion(); } else { endGame(); }
+  step++;
+  if(step<questions.length){showQuestion();}else{endGame();}
 }
 
 function endGame(){
-
-document.getElementById("game").classList.add("hidden");
-
-let end=document.getElementById("end");
-end.classList.remove("hidden");
-
-let name = document.getElementById("student").value || "μαθητή";
-
-end.innerHTML = `
-<h2>🏆 Τέλος Διαγωνισμού</h2>
-
-<p>Μπράβο ${name}!</p>
-<p>Συγκέντρωσες <b>${score}</b> πόντους.</p>
-
-<h3>📊 Κατάταξη Σχολείων</h3>
-
-<ol style="text-align:left;max-width:400px;margin:auto">
-<li>Το σχολείο σου 🥇</li>
-<li><b>2ο Γυμνάσιο 🥈</b></li>
-<li>Γυμνάσιο Βόλου 🥉</li>
-<li>Γυμνάσιο Φαρσάλων</li>
-<li>Γυμνάσιο Πειραιά</li>
-</ol>
-
-<p style="margin-top:15px;font-weight:bold;color:#16a34a">
-🎉 Συγχαρητήρια! Βγήκατε 1οι!
-</p>
-`;
+  $('gameArea').classList.add('hidden');
+  let end=$('endCard');end.classList.remove('hidden');
+  let max=questions.length*5;
+  let pct=Math.round(score/max*100);
+  $('finalScore').textContent=score;
+  $('maxScore').textContent=max;
+  $('finalPct').textContent='Ποσοστό επιτυχίας: '+pct+'%  •  Σωστές: '+correct+'/'+questions.length;
+  let others=[
+    {name:'2ο Γυμνάσιο Π. Φαλήρου',pts:Math.floor(Math.random()*20+100)},
+    {name:'8ο Γυμνάσιο Λάρισας',pts:Math.floor(Math.random()*20+80)},
+    {name:'Γυμνάσιο Μοσχάτου',pts:Math.floor(Math.random()*20+70)},
+    {name:'Γυμνάσιο Βόλου',pts:Math.floor(Math.random()*20+60)},
+  ].filter(x=>x.name!==mySchool);
+  let lb_=[{name:mySchool,pts:score,me:true},...others].sort((a,b)=>{
+    if(a.me)return -1;if(b.me)return 1;return b.pts-a.pts;
+  });
+  let medals=['🥇','🥈','🥉','',''];
+  let ul=$('leaderboard');ul.innerHTML='';
+  lb_.forEach((x,i)=>{
+    let li=document.createElement('li');
+    if(x.me)li.classList.add('me');
+    li.innerHTML=`<span class="lb-medal">${medals[i]||''}</span><span class="lb-name">${x.name}${x.me?' 🏫':''}</span><span class="lb-pts">${x.pts} πόντοι</span>`;
+    ul.appendChild(li);
+  });
 }
 
+function restart(){
+  $('endCard').classList.add('hidden');
+  $('startCard').classList.remove('hidden');
+}
 </script>
-
 </body>
 </html>
