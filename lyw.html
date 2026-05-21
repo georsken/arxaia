@@ -295,7 +295,7 @@ header p{
     <div class="school-select" id="schoolSelect">
       <div class="school-btn" onclick="selectSchool(this,'1ο Γυμνάσιο Π. Φαλήρου')">1ο Γυμνάσιο Π. Φαλήρου</div>
       <div class="school-btn" onclick="selectSchool(this,'2ο Γυμνάσιο Π. Φαλήρου')">2ο Γυμνάσιο Π. Φαλήρου</div>
-      <div class="school-btn" onclick="selectSchool(this,'Γυμνάσιο Νίκαιας')">Γυμνάσιο Νίκαιας</div>
+      <div class="school-btn" onclick="selectSchool(this,'8ο Γυμνάσιο')">8ο Γυμνάσιο</div>
       <div class="school-btn" onclick="selectSchool(this,'Γυμνάσιο Μοσχάτου')">Γυμνάσιο Μοσχάτου</div>
     </div>
     <input class="field-input" id="schoolCustom" placeholder="ή γράψε το σχολείο σου…" style="margin-bottom:16px;">
@@ -485,7 +485,7 @@ function endGame(){
   $('finalPct').textContent='Ποσοστό επιτυχίας: '+pct+'%  •  Σωστές: '+correct+'/'+questions.length;
   let others=[
     {name:'2ο Γυμνάσιο Π. Φαλήρου',pts:Math.floor(Math.random()*20+100)},
-    {name:'Γυμνάσιο Νίκαιας',pts:Math.floor(Math.random()*20+80)},
+    {name:'8ο Γυμνάσιο',pts:Math.floor(Math.random()*20+80)},
     {name:'Γυμνάσιο Μοσχάτου',pts:Math.floor(Math.random()*20+70)},
     {name:'Γυμνάσιο Βόλου',pts:Math.floor(Math.random()*20+60)},
   ].filter(x=>x.name!==mySchool);
